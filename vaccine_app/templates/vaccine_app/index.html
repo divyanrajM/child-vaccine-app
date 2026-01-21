@@ -1,0 +1,72 @@
+{% extends 'vaccine_app/base.html' %}
+
+{% block title %}VaxTrack - Child Vaccination Tracker{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">
+            <span class="title-icon">💉</span>
+            Child Vaccine Tracker
+        </h1>
+        <p class="hero-subtitle">Track and manage your child's vaccination schedule with ease</p>
+    </div>
+</div>
+
+<div class="lookup-section">
+    <div class="glass-card lookup-card">
+        <h2 class="card-title">Find Child Record</h2>
+        <p class="card-description">Enter RCH Number or Parent Phone Number to lookup vaccination records</p>
+
+        <form method="post" class="lookup-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_search_value" class="form-label">{{ form.search_value.label }}</label>
+                {{ form.search_value }}
+                {% if form.search_value.errors %}
+                <div class="form-error">{{ form.search_value.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            {% if not_found %}
+            <div class="alert alert-warning">
+                <span class="alert-icon">⚠️</span>
+                No child record found. Would you like to <a href="{% url 'register_child' %}">register a new child</a>?
+            </div>
+            {% endif %}
+
+            <button type="submit" class="btn btn-primary btn-block">
+                <span class="btn-icon">🔍</span>
+                Search
+            </button>
+        </form>
+
+        <div class="card-divider">
+            <span>or</span>
+        </div>
+
+        <a href="{% url 'register_child' %}" class="btn btn-secondary btn-block">
+            <span class="btn-icon">➕</span>
+            Register New Child
+        </a>
+    </div>
+</div>
+
+<div class="features-section">
+    <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3 class="feature-title">Track Vaccinations</h3>
+        <p class="feature-description">Keep a complete record of all vaccinations</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">⏰</div>
+        <h3 class="feature-title">Timely Reminders</h3>
+        <p class="feature-description">Never miss a scheduled vaccination</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3 class="feature-title">Complete History</h3>
+        <p class="feature-description">View full vaccination history anytime</p>
+    </div>
+</div>
+{% endblock %}

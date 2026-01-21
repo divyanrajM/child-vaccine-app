@@ -1,0 +1,32 @@
+{% extends 'vaccine_app/base.html' %}
+
+{% block title %}Children - {{ search_value }} - VaxTrack{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="{% url 'index' %}" class="back-link">← Back to Home</a>
+    <h1 class="page-title">Children Found</h1>
+    <p class="page-subtitle">Multiple children found for parent number: {{ search_value }}</p>
+</div>
+
+<div class="children-section">
+    <div class="children-grid">
+        {% for child in children %}
+        <div class="glass-card child-select-card">
+            <div class="child-avatar">
+                {% if child.sex == 'M' %}👦{% else %}👧{% endif %}
+            </div>
+            <h3 class="child-name">{{ child.child_name }}</h3>
+            <div class="child-meta-small">
+                <p>RCH: {{ child.rch_number }}</p>
+                <p>Age: {{ child.age_display }}</p>
+            </div>
+            <div class="child-actions">
+                <a href="{% url 'child_details' child.id %}" class="btn btn-outline btn-sm">Details</a>
+                <a href="{% url 'vaccination_schedule' child.id %}" class="btn btn-primary btn-sm">Schedule</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

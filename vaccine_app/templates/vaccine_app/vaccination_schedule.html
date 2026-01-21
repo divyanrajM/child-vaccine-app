@@ -1,0 +1,149 @@
+{% extends 'vaccine_app/base.html' %}
+
+{% block title %}Vaccination Schedule - {{ child.child_name }} - VaxTrack{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="{% url 'index' %}" class="back-link">← Back to Home</a>
+    <h1 class="page-title">Vaccination Schedule</h1>
+</div>
+
+<div class="schedule-section">
+    <!-- Child Info Card -->
+    <div class="glass-card child-card">
+        <div class="child-header">
+            <div class="child-avatar large">
+                {% if child.sex == 'M' %}👦{% else %}👧{% endif %}
+            </div>
+            <div class="child-details">
+                <h2 class="child-name">{{ child.child_name }}</h2>
+                <div class="child-meta">
+                    <span class="meta-item">
+                        <span class="meta-icon">🏷️</span>
+                        RCH: {{ child.rch_number }}
+                    </span>
+                    <span class="meta-item">
+                        <span class="meta-icon">📞</span>
+                        {{ child.parent_number }}
+                    </span>
+                    <span class="meta-item">
+                        <span class="meta-icon">🎂</span>
+                        {{ child.age_display }}
+                    </span>
+                    <span class="meta-item">
+                        <span class="meta-icon">📅</span>
+                        DOB: {{ child.date_of_birth|date:"d M Y" }}
+                    </span>
+                </div>
+            </div>
+            <a href="{% url 'child_details' child.id %}" class="btn btn-outline btn-sm">
+                Edit Details
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card stat-completed">
+            <div class="stat-number">{{ completed|length }}</div>
+            <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-card stat-pending">
+            <div class="stat-number">{{ pending|length }}</div>
+            <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card stat-overdue">
+            <div class="stat-number">{{ overdue|length }}</div>
+            <div class="stat-label">Overdue</div>
+        </div>
+    </div>
+
+    <!-- Overdue Section -->
+    {% if overdue %}
+    <div class="glass-card schedule-card">
+        <h3 class="section-title status-overdue">
+            <span class="status-dot overdue"></span>
+            Overdue Vaccines
+        </h3>
+        <div class="vaccine-list">
+            {% for record in overdue %}
+            <div class="vaccine-item overdue">
+                <div class="vaccine-info">
+                    <h4 class="vaccine-name">{{ record.vaccine.name }}</h4>
+                    <p class="vaccine-date">Scheduled: {{ record.scheduled_date|date:"d M Y" }}</p>
+                    {% if record.vaccine.description %}
+                    <p class="vaccine-desc">{{ record.vaccine.description }}</p>
+                    {% endif %}
+                </div>
+                <form method="post" action="{% url 'mark_administered' record.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success btn-sm">
+                        ✓ Mark as Done
+                    </button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Pending Section -->
+    {% if pending %}
+    <div class="glass-card schedule-card">
+        <h3 class="section-title status-pending">
+            <span class="status-dot pending"></span>
+            Upcoming Vaccines
+        </h3>
+        <div class="vaccine-list">
+            {% for record in pending %}
+            <div class="vaccine-item pending">
+                <div class="vaccine-info">
+                    <h4 class="vaccine-name">{{ record.vaccine.name }}</h4>
+                    <p class="vaccine-date">Scheduled: {{ record.scheduled_date|date:"d M Y" }}</p>
+                    {% if record.vaccine.description %}
+                    <p class="vaccine-desc">{{ record.vaccine.description }}</p>
+                    {% endif %}
+                </div>
+                <form method="post" action="{% url 'mark_administered' record.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success btn-sm">
+                        ✓ Mark as Done
+                    </button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Completed Section -->
+    {% if completed %}
+    <div class="glass-card schedule-card">
+        <h3 class="section-title status-completed">
+            <span class="status-dot completed"></span>
+            Completed Vaccines
+        </h3>
+        <div class="vaccine-list">
+            {% for record in completed %}
+            <div class="vaccine-item completed">
+                <div class="vaccine-info">
+                    <h4 class="vaccine-name">{{ record.vaccine.name }}</h4>
+                    <p class="vaccine-date">Administered: {{ record.administered_date|date:"d M Y" }}</p>
+                </div>
+                <span class="badge badge-success">✓ Done</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- No Vaccines Message -->
+    {% if not all_records %}
+    <div class="glass-card empty-card">
+        <div class="empty-icon">📋</div>
+        <h3>No Vaccination Schedule</h3>
+        <p>No vaccines have been scheduled yet. Please ask the administrator to add vaccines to the system.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
